@@ -2,6 +2,8 @@ import json
 import torch
 import torch.utils.data as Data
 
+from torch.autograd import Variable
+
 w2i = {}
 w2i['N'] = 0
 w2i['M'] = 1
@@ -73,3 +75,28 @@ def get_batch_data(data, batch_x, rnn_length):
     states = states_revert
 
     return batch_length, intervals, states
+
+
+def try_cuda(target):
+    if torch.cuda.is_available():
+        return target.cuda()
+    else:
+        return target
+
+def create_0_value():
+    if torch.cuda.is_available():
+        return Variable(torch.FloatTensor([0.]).cuda())
+    else:
+        return Variable(torch.FloatTensor([0.]))
+
+def create_random_variable(s1, s2):
+    if torch.cuda.is_available():
+        return Variable(torch.randn(s1, s2).cuda(), requires_grad=True)
+    else:
+        return Variable(torch.randn(s1, s2), requires_grad=True)
+
+def create_variable_by_longTensor(data):
+    if torch.cuda.is_available():
+        return Variable(data.cuda())
+    else:
+        return Variable(data)
