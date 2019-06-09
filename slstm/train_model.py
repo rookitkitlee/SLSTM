@@ -17,19 +17,21 @@ from slstm.data import create_variable_by_longTensor
 
 torch.manual_seed(1)
 
-base_size = 8
-batch_size = 3
+base_size = 64
+batch_size = 128
 target_size = 17
 interval_size = 5
 
-e_poch = 5
+# e_poch 10 e_lr 0.5 m_lr 0.05  best 99poch  loss 0.3499
+
+e_poch = 10
 e_lr = 0.5
-m_lr = 0.1
+m_lr = 0.05
 
 d2 = read_json("data/d2.json")
-d4 = []
-d8 = []
-d16 = []
+d4 = read_json("data/d4.json")
+d8 = read_json("data/d8.json")
+d16 = read_json("data/d16.json")
 d32 = read_json("data/d32.json")
 
 
@@ -82,12 +84,14 @@ def train_step(cell, batch_length, intervals, states, rnn_length):
 if __name__ == '__main__':
     cell = SLSTMCell(base_size, target_size, interval_size)
     cell = try_cuda(cell)
-    for i in range(1):
+    for i in range(100):
         total_loss = create_0_value()
         total_loss = total_loss + train(cell, d2, 2)
-        # train(cell, d4, 4)
-        # train(cell, d8, 8)
-        # train(cell, d16, 16)
-        #total_loss = total_loss + train(cell, d32, 32)
+        total_loss = total_loss + train(cell, d4, 4)
+        total_loss = total_loss + train(cell, d8, 8)
+        total_loss = total_loss + train(cell, d16, 16)
+        total_loss = total_loss + train(cell, d32, 32)
         average_loss = total_loss / (len(d2) + len(d4) + len(d8) + len(d16) + len(d32))
         print("train global poch : "+str(i)+" loss is : "+str(average_loss))
+
+        torch.save(cell, "checkpoint/model.iter" + str(i) + ".pth")

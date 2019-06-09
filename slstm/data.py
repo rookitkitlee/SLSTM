@@ -89,6 +89,12 @@ def create_0_value():
     else:
         return Variable(torch.FloatTensor([0.]))
 
+def create_ss_variable(s1):
+    if torch.cuda.is_available():
+        return Variable(torch.randn(s1).cuda(), requires_grad=True)
+    else:
+        return Variable(torch.randn(s1), requires_grad=True)
+
 def create_random_variable(s1, s2):
     if torch.cuda.is_available():
         return Variable(torch.randn(s1, s2).cuda(), requires_grad=True)
@@ -100,3 +106,5 @@ def create_variable_by_longTensor(data):
         return Variable(data.cuda())
     else:
         return Variable(data)
+
+
